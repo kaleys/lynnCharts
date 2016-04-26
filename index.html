@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>K线图</title>
+	<link rel="stylesheet" type="text/css" href="./css/lynnchart.css">
+	<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1448966754_604278.css">
+	<style>
+		#charts {
+			width: 90%;
+			height: 80%;
+			min-height: 600px;
+			margin: 0 auto;
+		}
+
+		.btn {
+			color: #999;
+			background: #404247;
+		}
+		.btn:hover {
+			background: #282B32;
+		}
+		.btn.active {
+			background: #3e4450
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="add-symbol" style="width: 90%;margin: 10px auto">
+	<span>添加symbol</span>
+	<button class="btn active" data-symbol="EUR/USD">EUR/USD</button>
+	<button class="btn active" data-symbol="NZD/USD">NZD/USD</button>
+	<button class="btn" data-symbol="USD/JPY">USD/JPY</button>
+	<button class="btn" data-symbol="USD/CHF">USD/CHF</button>
+</div>
+
+<div class="chart-wrap"id="charts">
+	
+</div>
+
+
+
+
+<!-- <script src="dist/common.js"></script>
+<script src="dist/index.js"></script> -->
+
+<script src="js/require.js" data-main="index.js"></script>
+
+</body>
+</html>

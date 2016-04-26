@@ -1,0 +1,121 @@
+$lynn-tab-bg: #fff;
+$lynn-tab-height: 31px;
+.lynn-tabs {
+	height: $lynn-tab-height;
+	line-height: $lynn-tab-height - 2;
+	border: 1px solid $lynn-bcolor;
+	overflow: hidden;
+	
+	.lynn-tab-wrap {
+		width: 200%;
+		&:before,
+		&:after {
+			display: table;
+			content: '';
+		}
+		&:after {
+			clear:both;
+		}
+	}
+	
+	.lynn-tab {
+		position: relative;
+		float:left;
+		display: inline-block;
+		height: $lynn-tab-height - 2;
+		padding-right:20px;
+		font-size: 14px;
+		color: $lynn-fcolor;
+		vertical-align: middle;
+		cursor: pointer;
+		border-right: 1px solid $lynn-bcolor;
+
+		&.active {
+			background: $lynn-hover-bg;
+			.icon-close {
+				background: $lynn-hover-bg;
+			}
+		}
+
+		.lynn-item {
+			padding: 0 5px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+
+			span {
+				padding: 0 5px;
+			}
+		}
+		.icon-close {
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 20px;
+			text-align: center;
+			color: darken($lynn-fcolor,10%);
+			height: $lynn-tab-height - 2;
+			background: $lynn-bg; 
+			&:hover {
+				color: $lynn-fcolor;
+			}
+		}
+	}
+}
+
+.lynn-layout {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+@at-root{
+	.lynn-layout-items {
+		height: 100%;
+		width: 100%;
+		clear:both;
+		overflow: hidden;
+
+		&.col_0 {
+			.lynn-layout-item.active {
+				border-color: $lynn-bcolor;
+			}
+		}
+	}
+	.lynn-layout-tabbar {
+		position: absolute;
+		z-index: 100;
+		background-color: $lynn-bg;
+	}
+	.lynn-layout-item-ctrl {
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		float: right;
+		height: 30px;
+
+		span {
+			padding: 0 5px;
+			display: inline-block;
+			color: #606b8b;
+			font-size: 20px;
+			cursor: pointer;
+		}
+
+	}
+
+	.lynn-layout-item  {
+		position: relative;
+		z-index:1;
+		float: left;
+		border: 1px solid $lynn-bcolor;
+		background-color:  $lynn-bg;
+
+		&.active {
+			border-color: #000;
+		}
+
+		
+	}
+}
+
+
+}

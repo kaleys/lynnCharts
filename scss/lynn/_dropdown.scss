@@ -1,0 +1,127 @@
+$lynn-dropdown-h:40px;
+.lynn-dropdown {
+	position: relative;
+	display: inline-block;
+	color: $lynn-fcolor;
+	height: $lynn-dropdown-h;
+	padding-right: 20px;
+	
+	border:1px solid $lynn-bcolor;
+	background: $lynn-bg;
+
+
+	
+	.dp-label {
+		padding: 0 10px;	
+		line-height: $lynn-dropdown-h - 2;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		overflow: hidden;
+		text-align: center;
+	}
+	.dp-toggle {
+		position: absolute;
+		right: -1px;
+		top: -1px;
+		display: block;
+		width: 20px;
+		height: $lynn-dropdown-h;
+		font-size: 0;
+		line-height: 0;
+		border: 1px solid $lynn-bcolor;
+		cursor: pointer;
+		text-align: center;
+
+		&:hover {
+			border-color: darken($lynn-bcolor,5%)
+		}
+		&:active {
+			background: darken($lynn-bg,5%);
+		}
+		.tgl-up {
+			display: inline-block;
+			width:0;
+			height: 0;
+			margin-top: 18px;
+			@include tgl-down(5px, $lynn-icon-color);
+		}
+	}
+
+	&.open {
+		.dp-toggle {
+			background: darken($lynn-bg,5%);
+			.tgl-up {
+				margin-top: 12px;
+				@include tgl-up(5px, $lynn-active-color);
+			}
+		}
+	}
+}
+
+.lynn-dplist{
+	position: absolute;
+	z-index: 500;
+	width: 200px;
+	overflow: auto;
+	background: $lynn-bg;
+	color: $lynn-fcolor;
+	border: 1px solid $lynn-bcolor;
+	@include unselectable();
+	.lynn-dpitem {
+		display: block;
+		padding: 5px;
+		width: 100%;
+
+		color: $lynn-fcolor;
+		line-height: 20px;
+		
+		.icon {
+			float:right;
+			margin-left: 5px;
+			font-size: 14px;
+			color: $lynn-bg;
+			cursor: pointer;
+		}
+		.lynn-check {
+			margin: -1px 10px 1px 0;
+			vertical-align: middle;
+		}
+
+		&:hover{
+			background: $lynn-hover-bg;
+			.icon {
+				color: lighten($lynn-fcolor,20%);
+
+				&:hover {
+					color: $lynn-fcolor;
+				}
+			}
+		}
+
+		&.active {
+			.icon-shoucang {
+				color: lighten($lynn-active-color,5%);
+			
+				&:hover {
+					color: $lynn-active-color;
+				}
+			}
+		}
+
+
+	}
+
+	.separator {
+		display: block;
+		overflow: hidden;
+		
+		height: 0;
+		border-top: 1px solid $lynn-bcolor;
+	}
+
+	.lynn-dp-footer {
+		border-top: 1px solid $lynn-bcolor;
+		padding:5px;
+		vertical-align: middle;
+	}
+}
