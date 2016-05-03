@@ -717,7 +717,7 @@ Chartbox.prototype = {
         if(itemsCount > maxShowCount) {
         	start = to - (maxShowCount-1)
         }
-        
+                
         return {start: start,to :to}
 	}
 	/**
