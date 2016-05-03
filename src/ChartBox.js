@@ -148,155 +148,160 @@ var isCanvasSuport = function(){
 	return !!document.createElement('canvas').getContext;	
 }
 function Chartbox(opts) {
-	var defaults = {
-		formatTitleTpl: function(){},
-		title:{},
-		container: $(document.body),
-		callbacks: {
-			onBoxTitleClick: noop,
-		},
-		ajax: {
-		},
-		chartOpts: {
-			period:1,   //时间段[1min,5min,15min,30min,1Hour,1Day,1Week,1Month]
-			maxShowCount: 800,
-			minShowCount: 20,
-			theme: {
-				backgroundColor:'#2e3138',  //背景颜色
-			    riseColor: '#ff0000',       //涨颜色
-			    fallColor: '#3dab4b',       //跌颜色
-			    normalColor: '#999',        //不涨也不跌的时候字体的颜色
-			    lineStyle: 'dashed',        //画底线或者边框的样式
-			    lineColor: '#21242b',       //画底线或者边框的颜色
-			    lineWidth: 1,               //画底线或者边框的线的宽度
-			    barWidth: 5,               //柱子的宽度
-			    spaceWidth: 2,              //柱子之间的间隔宽度
+		var defaults = {
+			formatTitleTpl: function(){},
+			title:{},
+			container: $(document.body),
+			callbacks: {
+				onBoxTitleClick: noop,
+			},
+			ajax: {
+			},
+			chartOpts: {
+				period:1,   //时间段[1min,5min,15min,30min,1Hour,1Day,1Week,1Month]
+				maxShowCount: 800,
+				minShowCount: 20,
+				theme: {
+					backgroundColor:'#2e3138',  //背景颜色
+				    riseColor: '#ff0000',       //涨颜色
+				    fallColor: '#3dab4b',       //跌颜色
+				    normalColor: '#999',        //不涨也不跌的时候字体的颜色
+				    lineStyle: 'dashed',        //画底线或者边框的样式
+				    lineColor: '#21242b',       //画底线或者边框的颜色
+				    lineWidth: 1,               //画底线或者边框的线的宽度
+				    barWidth: 5,               //柱子的宽度
+				    spaceWidth: 2,              //柱子之间的间隔宽度
+				    horizontalLineOpts: {		//mainArea里画价格线的默认配置
+				    	color:'#fff',
+				    	bgColor:'#783f04',
+				    	lineColor:'yellow',
+				    	font:'12px Arial'
+				    }
+				}, 
+				//区域化分  
+			    areas: {
+			    	//都有哪些区域，这些都需要能过areaName来找到配置
+			    	//items:['mainArea','volumeArea','subArea'],主区域(mainArea)名字不能变
+			    	items:['mainArea','volumeArea'],
+			    	//每个区域公共的配置
+			    	right:0
+			    },
+			    //各字自区域对应的配置
+			    mainArea: {
+			    	left: 0,
+			    	top: 30, 
+			    	bottom:0,
+			    	type:'candlestick',
+			    	yAxis:true,
+			    	horizontalLineSpace:55,
+			    	subCharts: {
+			    		'MA5':{
+			    			type:'MA',
+			    			color: 'rgb(255,70,251)',
+			    			daysCount: 5,
+			    			sort:5,
+			    		},
+			    		'MA10':{
+			    			type:'MA',
+			    			color: 'rgb(227,150,34)',
+			    			daysCount: 10,
+			    			sort:10,
+			    		},
+			    		'MA20':{
+			    			type:'MA',
+			    			color: 'rgb(53,71,107)',
+			    			daysCount: 20,
+			    			sort:20,
+			    		},
+			    		'MA60': {
+			    			type:'MA',
+			    			color: 'rgb(0,0,0)',
+			    			daysCount: 60,
+			    			sort:60,
+			    		}
+			    	},
+			    	marketPriceLine:{show:true,label:'市价'},
+			    	lines: {}
+			    },
+			    volumeArea: {
+			    	left: 0, top:30,bottom:0,
+			    	type:'volume',
+			    	horizontalLineSpace:50,
+			    	height: 50
+			    },
+			    subArea: {
+			    	left: 0, top:30,bottom:0,
+			    	height: 80
+			    },
+			    xAxis: {
+			    	left:0,top:0,bottom:0,
+			        height: 30,
+				    verticalLineSpace:100,
+			        color:'#999',
+			        font:'12px Arial'
+			    },
+			    yAxis: {
+			        width: 100,
+			        color:'#999',
+			        lineColor: '#21242b',
+			        font:'12px Arial'
+			    },
 			    
-			}, 
-			//区域化分  
-		    areas: {
-		    	//都有哪些区域，这些都需要能过areaName来找到配置
-		    	//items:['mainArea','volumeArea','subArea'],主区域名字不能变
-		    	items:['mainArea','volumeArea'],
-		    	//每个区域公共的配置
-		    	right:30
-		    },
-		    //各字自区域对应的配置
-		    mainArea: {
-		    	left: 0,
-		    	top: 30, 
-		    	bottom:0,
-		    	type:'candlestick',
-		    	yAxis:true,
-		    	horizontalLineSpace:55,
-		    	subCharts: {
-		    		'MA5':{
-		    			type:'MA',
-		    			color: 'rgb(255,70,251)',
-		    			daysCount: 5,
-		    			sort:5,
-		    		},
-		    		'MA10':{
-		    			type:'MA',
-		    			color: 'rgb(227,150,34)',
-		    			daysCount: 10,
-		    			sort:10,
-		    		},
-		    		'MA20':{
-		    			type:'MA',
-		    			color: 'rgb(53,71,107)',
-		    			daysCount: 20,
-		    			sort:20,
-		    		},
-		    		'MA60': {
-		    			type:'MA',
-		    			color: 'rgb(0,0,0)',
-		    			daysCount: 60,
-		    			sort:60,
-		    		}
-		    	}
-		    },
-		    volumeArea: {
-		    	left: 0, top:30,bottom:0,
-		    	type:'volume',
-		    	horizontalLineSpace:50,
-		    	height: 50
-		    },
-		    subArea: {
-		    	left: 0, top:30,bottom:0,
-		    	height: 80
-		    },
-		    xAxis: {
-		    	left:0,top:0,bottom:0,
-		        height: 30,
-			    verticalLineSpace:100,
-		        color:'#999',
-		        font:'12px Arial'
-		    },
-		    yAxis: {
-		        width: 60,
-		        color:'#999',
-		        lineColor: '#21242b',
-		        font:'12px Arial'
-		    },
-		    
-		},
-		events: {
-			drag: {
 			},
-			wheel: {
-				step:6,
-			},
-			crossLine:{
-				lineColor:'#ccc',
-				background:'#3e4450',
-				color:'#fff',
-				font:'12px Arial'
-			},
-
+			events: {
+				drag: {
+				},
+				wheel: {
+					step:6,
+				},
+				crossLine:{
+					lineColor:'#ccc',
+					background:'#3e4450',
+					color:'#fff',
+					font:'12px Arial'
+				},
+	
+			}
+		};
+		$.extend(true,this,defaults,opts);
+		if(!this.datas&&(!this.ajax||!this.ajax.url)) {
+			console.log('请设置数据');
+			return false;
 		}
-	};
-	$.extend(true,this,defaults,opts);
-	if(!this.datas&&(!this.ajax||!this.ajax.url)) {
-		console.log('请设置数据');
-		return false;
-	}
-	if(!this.container){
-		return false;
-	}
-
-	if(!isCanvasSuport()) {
-		this.container.append('<div style="text-align:center;padding:20px 0"><h1>您的浏览器不支持canvas</h1></div>');
-		return false;
-	}
-
-	this.chartList = {};
-	this.eventList = {};
-	this.tipList = {};
-	this.readyList = [];
-	var me = this;
-	this.initComplete = false;
-	this.init();
-	if(this.datas) {
-		this.datas = this.formatDatas(this.datas);
-		this.initChart();
-		this.initEventsObj();
-		this.execReadyList();
-		this.initComplete = true;
-	}else if(this.ajax) {
-		var me  = this;
-		this.ajaxData(null,null,function(datas){
-			me.datas = datas;
-			me.initChart();
-			me.initEventsObj();
+		if(!this.container){
+			return false;
+		}
+	
+		if(!isCanvasSuport()) {
+			this.container.append('<div style="text-align:center;padding:20px 0"><h1>您的浏览器不支持canvas</h1></div>');
+			return false;
+		}
+	
+		this.chartList = {};
+		this.eventList = {};
+		this.tipList = {};
+		this.readyList = [];
+		var me = this;
+		this.initComplete = false;
+		this.init();
+		if(this.datas) {
+			this.datas = this.formatDatas(this.datas);
+			this.initChart();
+			this.initEventsObj();
 			this.execReadyList();
 			this.initComplete = true;
-		});
-	}
-
+		}else if(this.ajax) {
+			var me  = this;
+			this.ajaxData(null,null,function(datas){
+				me.datas = datas;
+				me.initChart();
+				me.initEventsObj();
+				this.execReadyList();
+				this.initComplete = true;
+			});
+		}
+	
 }
-
-
 
 Chartbox.prototype = {
 	constructor: Chartbox
@@ -374,11 +379,13 @@ Chartbox.prototype = {
 		me.initBackgroundGrid(true);
 		this.getShowDatas();
 		
+
 		for(var i=0,len = items.length; i<len;i++) {
 			var cur = items[i];
 			this.initAreaChart(cur);
 			this.initAreaTip(cur);
 		}
+		this.drawMainAreaLines();
 		this.painting = false;	
 
 	}
@@ -505,7 +512,6 @@ Chartbox.prototype = {
 				this.chartList[areaName]
 			}
 		}
-
 		
 		var type = opts.type.toString().toLowerCase();
 		var chartObj = this.chartObjFactory(type,areaName);
@@ -712,8 +718,6 @@ Chartbox.prototype = {
         if(itemsCount > maxShowCount) {
         	start = to - (maxShowCount-1)
         }
-
-        console.log(start,to);
         
         return {start: start,to :to}
 	}
@@ -736,6 +740,117 @@ Chartbox.prototype = {
 		}
         this.showDatas = filteredData;
 	}
+	,calcAreaDataValueRange: function(areaName){
+		var datas = this.showDatas;
+        var opts = this.chartOpts[areaName];
+        var high,low,dotLen=3;
+        for(var line in opts.lines) {
+            var cur = opts.lines[line];
+            high = high ? Math.max(cur.value,high) : cur.value;
+            low = low ? Math.min(cur.value,low) : cur.low;
+        }
+        for(var i=0,len = datas.length;i<len;i++) {
+            var val = datas[i];
+            if(val) {
+                high = high ? Math.max(val.high, high) : val.high;
+                low = low ? Math.min(low, val.low) : val.low;
+                var highStr = val.high.toString(), highDotLen = highStr.length - highStr.indexOf('.') -1;
+                dotLen = Math.max(highDotLen,dotLen);
+            }
+        }
+        this.chartOpts[areaName].high = high;
+        this.chartOpts[areaName].low = low;
+        if(!this.chartOpts[areaName].length){
+            this.chartOpts[areaName].dotLen = dotLen
+        }
+	}
+
+	//这四个方法由于设计上的缺陷，现没有办法更好的优化了，不应该放到这个对象里的，应该放到Area【新建】对象里
+	,drawMainAreaLines: function(isDrawMarketPrice){
+		var isDraw = isDrawMarketPrice;
+		var mainAreaOpts = this.chartOpts.mainArea;
+		if(isDraw!==false){
+			
+			if(mainAreaOpts.marketPriceLine&&mainAreaOpts.marketPriceLine.show) {
+				this.drawMainAreaLine('marketPrice',{'label':'市价'})
+			}
+		}
+		var lines = mainAreaOpts.lines||{};
+		for(var line in lines) {
+			var opts = lines[line];
+			this.drawMainAreaLine(line,opts);
+		}
+	}
+	,drawMainAreaLine: function(key,lineOpts){
+		var defaultOpts = this.chartOpts.theme.horizontalLineOpts,ctx = this.ctx;
+		var opts = $.extend({},defaultOpts,lineOpts);
+		if(key=='marketPrice') {
+			var latestData = this.datas[this.datas.length-1]
+			opts.value = latestData.close;
+			var color = this.getColor(latestData.close,latestData.open);
+			if(!color) {
+				color = defaultOpts.bgColor;
+			}
+			opts.lineColor = opts.bgColor = color;
+		}
+		
+		if(!opts.value) {
+			return false;
+		}
+
+		//得到y轴的坐标
+		var y = this.getYByValue(opts.value,'mainArea');
+		if(!y) {
+			return false;
+		}
+		var mainAreaOpts = this.chartOpts.mainArea;
+		ctx.save();
+		ctx.translate(mainAreaOpts.left,mainAreaOpts.top);
+
+		//画线
+		var w = this.mainRegionWidth +this.chartOpts.areas.right;
+		core.drawHLine(this.ctx,opts.lineColor, 0, y, w, 'dashed');
+		//画Y轴的数据
+		var yAxisWidth = this.chartOpts.yAxis.width;
+		ctx.fillStyle = opts.bgColor;
+		ctx.fillRect(w+1, y-10, yAxisWidth, 20);
+		ctx.strokeStyle = this.chartOpts.theme.lineColor;
+		ctx.strokeRect(w+1, y-10, yAxisWidth, 20);
+		ctx.fillStyle = opts.color;
+		ctx.font = opts.font;
+		var text = core.toMoney(opts.value,mainAreaOpts.dotLen);
+		ctx.fillText(text,w+7, y+5);
+		if(opts.label) {
+			ctx.textAlign = 'end';
+			ctx.fillText(opts.label,this.canvas.width-5,y+5);
+		}
+		
+		this.ctx.restore();
+	}
+	,setMainAreaLines: function(){
+		var args = arguments;
+		if(args.length==1) {
+			this.chartOpts.mainArea.lines = args[0]
+		}else if(args.length==2) {
+			var lines = this.chartOpts.mainArea.lines||{};
+			if(!args[1]) return false;
+			var key = args[0],opts = args[1];
+			if(lines.key) {
+				delete lines.key
+			}
+			lines[key] = opts;
+		}	
+		
+	}
+	,deleteMainAreaLine: function(key){
+		var lines = this.chartOpts.mainArea.lines;
+		if(key) {
+			delete this.chartOpts.mainArea.lines[key]
+		}else{
+			this.chartOpts.mainArea.lines = {}
+		}
+	}
+	//end
 	/**
 	 * 画图，初始化的时候不需要
 	 * @param  {[object]} dataRanges [数据范围]
@@ -773,6 +888,7 @@ Chartbox.prototype = {
 		for(var chart in chartList) {
 			chartList[chart].painter();
 		}
+		this.drawMainAreaLines();
 		this.painting = false;
 		callback&&callback();
 	}

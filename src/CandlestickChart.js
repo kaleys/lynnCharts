@@ -18,7 +18,7 @@ var Candlestick = function(areaName,chartBox){
     this.ctx = chartBox.ctx;
     this.areaName = areaName;
     this.chartList = {};
-	this.init();
+    this.init();
 }
 Candlestick.prototype = {
     constructor: Candlestick,
@@ -78,7 +78,7 @@ Candlestick.prototype = {
         for(var i in this.chartList) {
             var chartObj = this.chartList[i];
             chartObj.getDatasRegion();
-        }
+        }        
        
 
         //画蜡烛线图 
@@ -92,9 +92,11 @@ Candlestick.prototype = {
             me.drawItem(datas[i],i)
         }
 
+
         this.drawYAxisChart();
         this.ctx.restore();
 
+        //画主图的副图部分
         for(var i in this.chartList) {
             if(i=='yAxis') {
                 continue;
@@ -187,8 +189,6 @@ Candlestick.prototype = {
             ctx.fillRect.apply(ctx,rect);
         }
         
-
-        
     },
 
     getDatas: function(){
@@ -196,24 +196,7 @@ Candlestick.prototype = {
     },
     //这里主要是算所属区域的最大值和最小值
     getDatasRegion: function(){
-        var datas = this.getDatas();
-        var areaName = this.areaName;
-        var opts = this.chartBox.chartOpts[areaName];
-        var high,low,dotLen=3;
-        for(var i=0,len = datas.length;i<len;i++) {
-            var val = datas[i];
-            if(val) {
-                high = high ? Math.max(val.high, high) : val.high;
-                low = low ? Math.min(low, val.low) : val.low;
-                var highStr = val.high.toString(), highDotLen = highStr.length - highStr.indexOf('.') -1;
-                dotLen = Math.max(highDotLen,dotLen);
-            }
-        }
-        this.chartBox.chartOpts[areaName].high = high;
-        this.chartBox.chartOpts[areaName].low = low;
-        if(!this.chartBox.chartOpts[areaName].length){
-            this.chartBox.chartOpts[areaName].dotLen = dotLen
-        }
+        this.chartBox.calcAreaDataValueRange.call(this.chartBox,this.areaName);
         
     },
 

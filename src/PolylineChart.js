@@ -16,15 +16,15 @@ function Polyline(areaName,chartBox){
 }
 
 Polyline.prototype = {
-	constructor: Polyline,
-	init: function(){
-		var charOpts = this.chartBox.chartOpts, opts = charOpts[this.areaName];
-		if(opts.yAxis) {
+    constructor: Polyline,
+    init: function(){
+        var charOpts = this.chartBox.chartOpts, opts = charOpts[this.areaName];
+        if(opts.yAxis) {
             this.chartList['yAxis'] = new YAxisChart( this.ctx, this.chartBox.chartOpts.yAxis );
         }
-	},
-	painter: function(){
-		var me  = this,ctx = this.ctx;
+    },
+    painter: function(){
+        var me  = this,ctx = this.ctx;
         this.painting = true;
         ctx.save();
         var charOpts = this.chartBox.chartOpts, opts = charOpts[this.areaName], theme = charOpts.theme, height = opts.height, width = opts.width;
@@ -57,10 +57,10 @@ Polyline.prototype = {
             var y = core.getRelativeYByShowDataValue(datas[i]['avg'], high, low, opts.height);
             var x = core.getXByShowDataIndex(i,theme.barWidth,theme.spaceWidth);
             if(!moveTo) {
-            	ctx.moveTo(x,y);
-            	moveTo = true;
+                ctx.moveTo(x,y);
+                moveTo = true;
             }else {
-            	ctx.lineTo(x,y);
+                ctx.lineTo(x,y);
             }
             
         }
@@ -69,38 +69,19 @@ Polyline.prototype = {
         this.drawYAxisChart();
         ctx.restore();
         this.painting = false;
-	},
+    },
 
-	drawBackground: function(){
+    drawBackground: function(){
 
-	},
+    },
 
-	getDatas: function(){
+    getDatas: function(){
         return this.chartBox.showDatas;
     },
 
     //这里主要是算所属区域的最大值和最小值
     getDatasRegion: function(){
-        var datas = this.getDatas();
-        var areaName = this.areaName;
-        var opts = this.chartBox.chartOpts[areaName];
-        var high = opts.high,low = opts.low;
-        for(var i=0,len = datas.length;i<len;i++) {
-            var val = datas[i];
-            if(val) {
-                high = high ? Math.max(val.avg, high) : val.high;
-                low = low ? Math.min(low, val.avg) : val.low;
-            }
-        }
-        this.chartBox.chartOpts[areaName].high = high;
-        this.chartBox.chartOpts[areaName].low = low;
-        if(!this.chartBox.chartOpts[areaName].length){
-            var highStr = high.toString(), lowStr = low.toString();
-            var highDotLen = highStr.length - highStr.indexOf('.') -1;
-            var lowDotLen = lowStr.length - lowStr.indexOf('.') -1;
-            this.chartBox.chartOpts[areaName].dotLen =  Math.max(highDotLen,lowDotLen);
-        }
-        
+        this.chartBox.calcAreaDataValueRange.call(this.chartBox,this.areaName);
     },
 
     drawYAxisChart: function(){
@@ -111,7 +92,7 @@ Polyline.prototype = {
         var datas = this.getDatas(), high = opts.high, low = opts.low, yPos = this.yPos,height = opts.height;
         var result = [];
         for(var i=0,len = yPos.length; i<len; i++) {
-        	var val = high - (high-low)*yPos[i]/height;
+            var val = high - (high-low)*yPos[i]/height;
             var v = core.toMoney(val,opts.dotLen);
             result.push({value:v,y:yPos[i]});
         }

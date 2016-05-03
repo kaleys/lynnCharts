@@ -77,7 +77,7 @@ XAixsChart.prototype = {
 				ctx.fillText(cur.value,x,20);
 			}
 		}
-	}
+	},	
 }
 
 module.exports = XAixsChart;

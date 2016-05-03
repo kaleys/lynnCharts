@@ -32,229 +32,229 @@
 	
 
 	function LynnCharts(opts){
-		var defaults = {
-			dpWrap:document.body,
-			toolbar: {
-				applyAll:false,
-				period: {
-					labelWidth: 85,
-					label: function(activeEle){
-						if(activeEle){
-							var v = activeEle.item;
-							return v.label;
-						} else {
-							return '选择周期'
-						}
-					},
-					listCls:'chart-period',
-					items: [
-						{label: '1 Minute', value:1, active:true},
-						{label: '5 Minute', value:5},
-						{label: '15 Minute', value:15},
-						{label: '1 Hour', value:60},
-						{label: '1 Day', value:100},
-						{label: '1 Week', value:200},
-						{label: '1 Month', value:300}
-					],
-					formatItemTpl: function(item) {
-						var cls = item.active ? 'active':''
-						return '<a class="clearfix '+ cls +'">'+ item.label + '<i class="icon icon-shoucang"></i></a>';
-					},
-					itemClick: function(data,obj) {
-						obj.c.changePeriod(data.value);
-					}
-				},
-				type: {
-					label: function(activeEle){
-						if(activeEle){
-							var v = activeEle.item;
-							return v.label;
-						} else {
-							return '切换类型'
-						}
-					},
-					listCls:'chart-type',
-					labelWidth: 70,
-					width:100,
-					items: [
-						{label:'折线图', value:'polyline' },
-						{label: 'k线图', value:'candlestick',active:true},
-					],
-					formatItemTpl: function(item) {
-						var cls = item.active ? 'active':''
-						return '<a class="clearfix '+ cls +'">'+ item.label + '<i class="icon icon-shoucang"></i></a>';
-					},
-					itemClick: function(data,obj){
-						var chart = obj.c;
-						chart.changeType(data.value);
-					}
-				},
-				MAS: {
-					label:'MAs',
-					labelWidth:60,
-					width: 152,
-					multiple:true,
-					listCls:'MAList',
-					maxCount:8,
-					items: [
-						{label:'MA5',value:5,active:true},
-						{label:'MA10',value:10,active:true},
-						{label:'MA20',value:20,active:true},
-						{label:'MA60',value:60,active:true}
-					],
-					onError: function(status,msg) {
-						this.c.onError(status,msg);
-					},
-					footer: [
-						{
-							plugin: LynnSpinner,
-							name:'spinner',
-							tpl:'<input type="text"></input>',
-							options: {min:1,step:1,max:250}
-						},
-						{
-							name:'colorpicker',
-							tpl:'<input type="text"></input>',
-							init: function(opts,fatherObj){
-								var appendTo = fatherObj.dpListWrap;
-								var opts = {
-									color:'yellow',
-									showPaletteOnly: true,
-								    togglePaletteOnly: true,
-								    hideAfterPaletteSelect:true,
-								    togglePaletteMoreText: '自定义',
-								    togglePaletteLessText: '返回',
-								    palette:newGmail,
-								    appendTo:appendTo
-								}
-								return this.spectrum(opts);
+			var defaults = {
+				dpWrap:document.body,
+				toolbar: {
+					applyAll:false,
+					period: {
+						labelWidth: 85,
+						label: function(activeEle){
+							if(activeEle){
+								var v = activeEle.item;
+								return v.label;
+							} else {
+								return '选择周期'
 							}
 						},
-						{
-							tpl:'<button class="btn btn-add btn-dark">添加</button>',
-							onClick: function(dpObj){
-								var value = dpObj.plugins['spinner'].getVal();
-								var color = dpObj.plugins['colorpicker'].spectrum('get').toHexString();
-								var item = {label:'MA'+value, value:value, active:true, canDel:true, group:'add'};
-								var add = dpObj.addItem(item);
-								if(add) {
-									var chart = dpObj.c;
-									chart.changeMas({label:item.label,type:'MA',color: color,daysCount: value,sort:value},true);
-									dpObj.plugins['spinner'].setVal(1);
-								}
-							}
-						}
-					],
-					itemClick: function(data,dpObj){
-						var chart = dpObj.c;
-						chart.changeMas(data);
-					}
-				},
-				jumpLastestBtn:'<i class="icon icon-justify-r"></i>',
-				fullscreen: {
-					big:'全屏',
-					small:'返回'
-				},
-				layoutCtrl: {
-					label: function(activeEle){
-						if(activeEle){
-							var v = activeEle.item;
-							return v.label;
-						} else {
-							return '布局'
+						listCls:'chart-period',
+						items: [
+							{label: '1 Minute', value:1, active:true},
+							{label: '5 Minute', value:5},
+							{label: '15 Minute', value:15},
+							{label: '1 Hour', value:60},
+							{label: '1 Day', value:100},
+							{label: '1 Week', value:200},
+							{label: '1 Month', value:300}
+						],
+						formatItemTpl: function(item) {
+							var cls = item.active ? 'active':''
+							return '<a class="clearfix '+ cls +'">'+ item.label + '<i class="icon icon-shoucang"></i></a>';
+						},
+						itemClick: function(data,obj) {
+							obj.c.changePeriod(data.value);
 						}
 					},
-					labelWidth:110,
-					width: 150,
-					listCls:'layoutCtrl',
-					maxCount:6,
-					items: [
-						{label:'单窗口多标签',value:0,active: true},
-						{label:'多窗口1列',value:1},
-						{label:'多窗口2列',value:2},
-						{label:'多窗口3列',value:3}
-					],
-					itemClick: function(data,dpObj){
-						var chart = dpObj.c;
-						chart.changeLayout(data.value);
-					}
-				},
-				lock:false,
-			},
-			layout: {
-			},
-			chartbox: {
-				events: {
-					drag: {
-						onBeforeDrag: function(){
-							var chart = this.c;
-							chart.operateChart(function(chartBox) {
-								if(chartBox!==this) {
-									var crossLineEvents = chartBox.eventList['crossLine'];
-									if(crossLineEvents) {
-										crossLineEvents.mouseout.call(crossLineEvents);
+					type: {
+						label: function(activeEle){
+							if(activeEle){
+								var v = activeEle.item;
+								return v.label;
+							} else {
+								return '切换类型'
+							}
+						},
+						listCls:'chart-type',
+						labelWidth: 70,
+						width:100,
+						items: [
+							{label:'折线图', value:'polyline' },
+							{label: 'k线图', value:'candlestick',active:true},
+						],
+						formatItemTpl: function(item) {
+							var cls = item.active ? 'active':''
+							return '<a class="clearfix '+ cls +'">'+ item.label + '<i class="icon icon-shoucang"></i></a>';
+						},
+						itemClick: function(data,obj){
+							var chart = obj.c;
+							chart.changeType(data.value);
+						}
+					},
+					MAS: {
+						label:'MAs',
+						labelWidth:60,
+						width: 152,
+						multiple:true,
+						listCls:'MAList',
+						maxCount:8,
+						items: [
+							{label:'MA5',value:5,active:true},
+							{label:'MA10',value:10,active:true},
+							{label:'MA20',value:20,active:true},
+							{label:'MA60',value:60,active:true}
+						],
+						onError: function(status,msg) {
+							this.c.onError(status,msg);
+						},
+						footer: [
+							{
+								plugin: LynnSpinner,
+								name:'spinner',
+								tpl:'<input type="text"></input>',
+								options: {min:1,step:1,max:250}
+							},
+							{
+								name:'colorpicker',
+								tpl:'<input type="text"></input>',
+								init: function(opts,fatherObj){
+									var appendTo = fatherObj.dpListWrap;
+									var opts = {
+										color:'yellow',
+										showPaletteOnly: true,
+									    togglePaletteOnly: true,
+									    hideAfterPaletteSelect:true,
+									    togglePaletteMoreText: '自定义',
+									    togglePaletteLessText: '返回',
+									    palette:newGmail,
+									    appendTo:appendTo
 									}
-									chartBox.tempOldRanges = chartBox.dataRanges;
+									return this.spectrum(opts);
 								}
-							})
-						},
-						onDrag:function(oldRanges){
-							var chart = this.c;
-							chart.synchronizeDrag(this,oldRanges);
-						},
-						onAfterDrag: function(){
-							var chart = this.c;
-							chart.operateChart(function(chartBox) {
-								if(chartBox!==this) {
-									delete chartBox.tempOldRanges;
+							},
+							{
+								tpl:'<button class="btn btn-add btn-dark">添加</button>',
+								onClick: function(dpObj){
+									var value = dpObj.plugins['spinner'].getVal();
+									var color = dpObj.plugins['colorpicker'].spectrum('get').toHexString();
+									var item = {label:'MA'+value, value:value, active:true, canDel:true, group:'add'};
+									var add = dpObj.addItem(item);
+									if(add) {
+										var chart = dpObj.c;
+										chart.changeMas({label:item.label,type:'MA',color: color,daysCount: value,sort:value},true);
+										dpObj.plugins['spinner'].setVal(1);
+									}
 								}
-							})
+							}
+						],
+						itemClick: function(data,dpObj){
+							var chart = dpObj.c;
+							chart.changeMas(data);
 						}
 					},
-					wheel: {
-						step:6,
-						onBeforeWheel: function(){
-							console.log('onBeforeWheel');
+					jumpLastestBtn:'<i class="icon icon-justify-r"></i>',
+					fullscreen: {
+						big:'全屏',
+						small:'返回'
+					},
+					layoutCtrl: {
+						label: function(activeEle){
+							if(activeEle){
+								var v = activeEle.item;
+								return v.label;
+							} else {
+								return '布局'
+							}
 						},
-						onWheel: function(oldRanges){
-							var chart = this.c;
-							chart.synchronizeWheel(this,oldRanges)
+						labelWidth:110,
+						width: 150,
+						listCls:'layoutCtrl',
+						maxCount:6,
+						items: [
+							{label:'单窗口多标签',value:0,active: true},
+							{label:'多窗口1列',value:1},
+							{label:'多窗口2列',value:2},
+							{label:'多窗口3列',value:3}
+						],
+						itemClick: function(data,dpObj){
+							var chart = dpObj.c;
+							chart.changeLayout(data.value);
 						}
 					},
-					crossLine: {
-						onCross: function(info){
-							var chart = this.c;
-							chart.synchronizeCross(this,info)
+					lock:false,
+				},
+				layout: {
+				},
+				chartbox: {
+					events: {
+						drag: {
+							onBeforeDrag: function(){
+								var chart = this.c;
+								chart.operateChart(function(chartBox) {
+									if(chartBox!==this) {
+										var crossLineEvents = chartBox.eventList['crossLine'];
+										if(crossLineEvents) {
+											crossLineEvents.mouseout.call(crossLineEvents);
+										}
+										chartBox.tempOldRanges = chartBox.dataRanges;
+									}
+								})
+							},
+							onDrag:function(oldRanges){
+								var chart = this.c;
+								chart.synchronizeDrag(this,oldRanges);
+							},
+							onAfterDrag: function(){
+								var chart = this.c;
+								chart.operateChart(function(chartBox) {
+									if(chartBox!==this) {
+										delete chartBox.tempOldRanges;
+									}
+								})
+							}
 						},
-						onAfterCross: function(){
-							var chart = this.c;
-							chart.synchronizeAfterCross(this);
-						}
-					},
-					rightClick:{}
-				}
-			},
-			polyline: {
-				lineColor:'yellow',
-			},
-			formatTabTpl: function(item) {
-				var tpl = '<span class="title">'+item.title+'</span>';
-				if(item.ask != void 0) tpl += '<span class="number-plus price ask">卖价:'+item.ask+'</span>';
-				if(item.bid != void 0) tpl += '<span class="number-fall price bid">买价:'+item.bid+'</span>';
-				return tpl
-			},
-			items: [],
-			onError: function(status,msg){alert(msg)}
-		};
-		
-		$.extend(true,this,defaults,opts);
-		var container = this.container||document.body
-		this.container = $(container).addClass('lynn-chart');
-		if(!/^p|r|f/.test(this.container.css('position'))) {
-			this.container.css('position','relative');
-		}
-		this.chartList = [];
-		this.init();
+						wheel: {
+							step:6,
+							onBeforeWheel: function(){
+								console.log('onBeforeWheel');
+							},
+							onWheel: function(oldRanges){
+								var chart = this.c;
+								chart.synchronizeWheel(this,oldRanges)
+							}
+						},
+						crossLine: {
+							onCross: function(info){
+								var chart = this.c;
+								chart.synchronizeCross(this,info)
+							},
+							onAfterCross: function(){
+								var chart = this.c;
+								chart.synchronizeAfterCross(this);
+							}
+						},
+						rightClick:{}
+					}
+				},
+				polyline: {
+					lineColor:'yellow',
+				},
+				formatTabTpl: function(item) {
+					var tpl = '<span class="title">'+item.title+'</span>';
+					if(item.ask != void 0) tpl += '<span class="number-plus price ask">卖价:'+item.ask+'</span>';
+					if(item.bid != void 0) tpl += '<span class="number-fall price bid">买价:'+item.bid+'</span>';
+					return tpl
+				},
+				items: [],
+				onError: function(status,msg){alert(msg)}
+			};
+			
+			$.extend(true,this,defaults,opts);
+			var container = this.container||document.body
+			this.container = $(container).addClass('lynn-chart');
+			if(!/^p|r|f/.test(this.container.css('position'))) {
+				this.container.css('position','relative');
+			}
+			this.chartList = [];
+			this.init();
 	}
 	LynnCharts.prototype = {
 		constructor: LynnCharts,
@@ -359,7 +359,8 @@
 				chartBox.resize();
 			}
 			opts.onChangeActive = function(index) {
-				me.synchronizeToolBar.call(me,index)
+				me.synchronizeToolBar.call(me,index);
+				me.onChange&&me.onChange.call(me,index);
 			}
 			var toolbarHeight = this.toolbarEle.outerHeight();
 			this.toolbarHeight = toolbarHeight;
@@ -407,7 +408,8 @@
 			var me = this;
 			var chartOpts = this.chartbox;
 			if(item.opts) {
-				chartOpts = $.extend(true,chartOpts,item.opts);
+				chartOpts = $.extend(true,{},chartOpts,item.opts);
+				delete item.opts;
 			}
 			chartOpts.formatTitleTpl = this.formatTabTpl;
 			chartOpts.title = item;
@@ -668,7 +670,7 @@
 			}
 		},
 		setActive: function(v) {
-			if(!v) {
+			if(v=='undefined') {
 				return false;
 			}
 			var ret = this.layoutObj.setActive(v);
@@ -720,12 +722,13 @@
 				appendDatas = chartBox.formatDatas(appendDatas);
 				chartBox.datas.pop();
 				chartBox.appendDatas(appendDatas,1);
+				var dataLength = appendDatas.length - 1;
 
 				//如果当前显示的是最新的数据，那么需要更新图
 				if(to >= oldDatasLength -1) {
-					var max = to - oldDatasLength -1;
-					if(appendDatas.length-1 <= max) {
-						to = to + appendDatas.length-1
+					var max = to - (oldDatasLength -1);
+					if(dataLength <= max) {
+						to = to + dataLength;
 					}else {
 						var count = to - start;
 						to = chartBox.datas.length-1;
