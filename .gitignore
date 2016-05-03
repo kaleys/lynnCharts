@@ -1,0 +1,8 @@
+# 忽略node_module/下的文件
+node_modules/
+controller/
+plugin-test/
+src-backup/
+dist/
+index-backup.html
+
