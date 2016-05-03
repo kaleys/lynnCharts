@@ -5461,8 +5461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }else if(start > maxDataLength - minShowCount){
 	        	start = maxDataLength - minShowCount;
 	        	to = start + itemsCount -1;
-	        }
-	        
+	        }        
 	        //处理是否显示在最大个数与最小个数之间,主要是缩放
 	        
 	        if(itemsCount<minShowCount) {

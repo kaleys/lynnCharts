@@ -9,7 +9,7 @@ module.exports = {
 		lynnCharts:'./src/Lynncharts.js',
 		//lynnTabs:'./controller/lynnTabs.js',
 		//lynnLayoutTest:'./controller/lynnLayoutTest.js',
-		lynnMarquee:'./src/plugin/lynnMarquee'
+		//lynnMarquee:'./src/plugin/lynnMarquee'
 	},
 	output: {
 		path:__dirname+'/dist',
