@@ -8,4 +8,5 @@ src/
 package.json
 webpack.config.js
 gulpfile.js
+scss/
 index-backup.html
