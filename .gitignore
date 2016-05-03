@@ -5,4 +5,7 @@ plugin-test/
 src-backup/
 dist/
 src/
+package.json
+webpack.config.js
+gulpfile.js
 index-backup.html

@@ -10,10 +10,7 @@ require.config({
 	}
 })
 
-
 require(['jquery','dist/lynnCharts'],function($,lynnCharts){
-
-
 	var charts = new lynnCharts({
 		container:'#charts',
 		items: [
