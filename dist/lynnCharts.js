@@ -910,8 +910,19 @@ return /******/ (function(modules) { // webpackBootstrap
 				for(var i=0,cur; cur=this.chartList[i++];) {
 					cur.resize.call(cur);
 				}
+			},
+			changeTheme: function(){
+				var chartList =this.chartList;
+				for(var i=0,chart;chart=chartList[i++];){
+					var riseColor = chart.chartOpts.theme.riseColor;
+					var fallColor = chart.chartOpts.theme.fallColor;
+					chart.chartOpts.theme.riseColor = fallColor;
+					chart.chartOpts.theme.fallColor = riseColor;
+					chart.painter();
+				}
 			}
 		}
+		LynnCharts.dp = LynnDropDown;
 	
 		module.exports = LynnCharts;
 	
@@ -4793,7 +4804,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			    mainArea: {
 			    	left: 0,
 			    	top: 30, 
-			    	bottom:0,					//规定在主区域内，canvas离区域的距离
+			    	bottom:10,					//规定在主区域内，canvas离区域的距离
 			    	type:'candlestick',			//规定这个区域内画什么图表类型，目前只支持candlestick和polyline类型
 			    	yAxis:true,					//是否显示y轴，这个目前只对主区域有用，其他区域暂没做测试
 			    	horizontalLineSpace:55,		//图形区域可能需要画一些刻度线，这里表示两条水平线之间的间隔
@@ -4901,158 +4912,158 @@ return /******/ (function(modules) { // webpackBootstrap
 		return !!document.createElement('canvas').getContext;	
 	}
 	function Chartbox(opts) {
-			var defaults = {
-				formatTitleTpl: function(){},
-				title:{},
-				container: $(document.body),
-				callbacks: {
-					onBoxTitleClick: noop,
+		var defaults = {
+			formatTitleTpl: function(){},
+			title:{},
+			container: $(document.body),
+			callbacks: {
+				onBoxTitleClick: noop,
+			},
+			ajax: {
+			},
+			chartOpts: {
+				period:1,   //时间段[1min,5min,15min,30min,1Hour,1Day,1Week,1Month]
+				maxShowCount: 800,
+				minShowCount: 20,
+				theme: {
+					backgroundColor:'#2e3138',  //背景颜色
+				    riseColor: '#ff0000',       //涨颜色
+				    fallColor: '#3dab4b',       //跌颜色
+				    normalColor: '#999',        //不涨也不跌的时候字体的颜色
+				    lineStyle: 'dashed',        //画底线或者边框的样式
+				    lineColor: '#21242b',       //画底线或者边框的颜色
+				    lineWidth: 1,               //画底线或者边框的线的宽度
+				    barWidth: 5,               //柱子的宽度
+				    spaceWidth: 2,              //柱子之间的间隔宽度
+				    horizontalLineOpts: {		//mainArea里画价格线的默认配置
+				    	color:'#fff',
+				    	bgColor:'#783f04',
+				    	lineColor:'yellow',
+				    	font:'12px Arial'
+				    }
+				}, 
+				//区域化分  
+			    areas: {
+			    	//都有哪些区域，这些都需要能过areaName来找到配置
+			    	//items:['mainArea','volumeArea','subArea'],主区域(mainArea)名字不能变
+			    	items:['mainArea','volumeArea'],
+			    	//每个区域公共的配置
+			    	right:60
+			    },
+			    //各字自区域对应的配置
+			    mainArea: {
+			    	left: 0,
+			    	top: 30, 
+			    	bottom:10,
+			    	type:'candlestick',
+			    	yAxis:true,
+			    	horizontalLineSpace:55,
+			    	subCharts: {
+			    		'MA5':{
+			    			type:'MA',
+			    			color: 'rgb(255,70,251)',
+			    			daysCount: 5,
+			    			sort:5,
+			    		},
+			    		'MA10':{
+			    			type:'MA',
+			    			color: 'rgb(227,150,34)',
+			    			daysCount: 10,
+			    			sort:10,
+			    		},
+			    		'MA20':{
+			    			type:'MA',
+			    			color: 'rgb(53,71,107)',
+			    			daysCount: 20,
+			    			sort:20,
+			    		},
+			    		'MA60': {
+			    			type:'MA',
+			    			color: 'rgb(0,0,0)',
+			    			daysCount: 60,
+			    			sort:60,
+			    		}
+			    	},
+			    	marketPriceLine:{show:true,label:'市价'},
+			    	lines: {}
+			    },
+			    volumeArea: {
+			    	left: 0, top:30,bottom:0,
+			    	type:'volume',
+			    	horizontalLineSpace:50,
+			    	height: 50
+			    },
+			    subArea: {
+			    	left: 0, top:30,bottom:0,
+			    	height: 80
+			    },
+			    xAxis: {
+			    	left:0,top:0,bottom:0,
+			        height: 30,
+				    verticalLineSpace:100,
+			        color:'#999',
+			        font:'12px Arial'
+			    },
+			    yAxis: {
+			        width: 100,
+			        color:'#999',
+			        lineColor: '#21242b',
+			        font:'12px Arial'
+			    },
+			    
+			},
+			events: {
+				drag: {
 				},
-				ajax: {
+				wheel: {
+					step:6,
 				},
-				chartOpts: {
-					period:1,   //时间段[1min,5min,15min,30min,1Hour,1Day,1Week,1Month]
-					maxShowCount: 800,
-					minShowCount: 20,
-					theme: {
-						backgroundColor:'#2e3138',  //背景颜色
-					    riseColor: '#ff0000',       //涨颜色
-					    fallColor: '#3dab4b',       //跌颜色
-					    normalColor: '#999',        //不涨也不跌的时候字体的颜色
-					    lineStyle: 'dashed',        //画底线或者边框的样式
-					    lineColor: '#21242b',       //画底线或者边框的颜色
-					    lineWidth: 1,               //画底线或者边框的线的宽度
-					    barWidth: 5,               //柱子的宽度
-					    spaceWidth: 2,              //柱子之间的间隔宽度
-					    horizontalLineOpts: {		//mainArea里画价格线的默认配置
-					    	color:'#fff',
-					    	bgColor:'#783f04',
-					    	lineColor:'yellow',
-					    	font:'12px Arial'
-					    }
-					}, 
-					//区域化分  
-				    areas: {
-				    	//都有哪些区域，这些都需要能过areaName来找到配置
-				    	//items:['mainArea','volumeArea','subArea'],主区域(mainArea)名字不能变
-				    	items:['mainArea','volumeArea'],
-				    	//每个区域公共的配置
-				    	right:0
-				    },
-				    //各字自区域对应的配置
-				    mainArea: {
-				    	left: 0,
-				    	top: 30, 
-				    	bottom:0,
-				    	type:'candlestick',
-				    	yAxis:true,
-				    	horizontalLineSpace:55,
-				    	subCharts: {
-				    		'MA5':{
-				    			type:'MA',
-				    			color: 'rgb(255,70,251)',
-				    			daysCount: 5,
-				    			sort:5,
-				    		},
-				    		'MA10':{
-				    			type:'MA',
-				    			color: 'rgb(227,150,34)',
-				    			daysCount: 10,
-				    			sort:10,
-				    		},
-				    		'MA20':{
-				    			type:'MA',
-				    			color: 'rgb(53,71,107)',
-				    			daysCount: 20,
-				    			sort:20,
-				    		},
-				    		'MA60': {
-				    			type:'MA',
-				    			color: 'rgb(0,0,0)',
-				    			daysCount: 60,
-				    			sort:60,
-				    		}
-				    	},
-				    	marketPriceLine:{show:true,label:'市价'},
-				    	lines: {}
-				    },
-				    volumeArea: {
-				    	left: 0, top:30,bottom:0,
-				    	type:'volume',
-				    	horizontalLineSpace:50,
-				    	height: 50
-				    },
-				    subArea: {
-				    	left: 0, top:30,bottom:0,
-				    	height: 80
-				    },
-				    xAxis: {
-				    	left:0,top:0,bottom:0,
-				        height: 30,
-					    verticalLineSpace:100,
-				        color:'#999',
-				        font:'12px Arial'
-				    },
-				    yAxis: {
-				        width: 100,
-				        color:'#999',
-				        lineColor: '#21242b',
-				        font:'12px Arial'
-				    },
-				    
+				crossLine:{
+					lineColor:'#ccc',
+					background:'#3e4450',
+					color:'#fff',
+					font:'12px Arial'
 				},
-				events: {
-					drag: {
-					},
-					wheel: {
-						step:6,
-					},
-					crossLine:{
-						lineColor:'#ccc',
-						background:'#3e4450',
-						color:'#fff',
-						font:'12px Arial'
-					},
-		
-				}
-			};
-			$.extend(true,this,defaults,opts);
-			if(!this.datas&&(!this.ajax||!this.ajax.url)) {
-				console.log('请设置数据');
-				return false;
+	
 			}
-			if(!this.container){
-				return false;
-			}
-		
-			if(!isCanvasSuport()) {
-				this.container.append('<div style="text-align:center;padding:20px 0"><h1>您的浏览器不支持canvas</h1></div>');
-				return false;
-			}
-		
-			this.chartList = {};
-			this.eventList = {};
-			this.tipList = {};
-			this.readyList = [];
-			var me = this;
-			this.initComplete = false;
-			this.init();
-			if(this.datas) {
-				this.datas = this.formatDatas(this.datas);
-				this.initChart();
-				this.initEventsObj();
+		};
+		$.extend(true,this,defaults,opts);
+		if(!this.datas&&(!this.ajax||!this.ajax.url)) {
+			console.log('请设置数据');
+			return false;
+		}
+		if(!this.container){
+			return false;
+		}
+	
+		if(!isCanvasSuport()) {
+			this.container.append('<div style="text-align:center;padding:20px 0"><h1>您的浏览器不支持canvas</h1></div>');
+			return false;
+		}
+	
+		this.chartList = {};
+		this.eventList = {};
+		this.tipList = {};
+		this.readyList = [];
+		var me = this;
+		this.initComplete = false;
+		this.init();
+		if(this.datas) {
+			this.datas = this.formatDatas(this.datas);
+			this.initChart();
+			this.initEventsObj();
+			this.execReadyList();
+			this.initComplete = true;
+		}else if(this.ajax) {
+			var me  = this;
+			this.ajaxData(null,null,function(datas){
+				me.datas = datas;
+				me.initChart();
+				me.initEventsObj();
 				this.execReadyList();
 				this.initComplete = true;
-			}else if(this.ajax) {
-				var me  = this;
-				this.ajaxData(null,null,function(datas){
-					me.datas = datas;
-					me.initChart();
-					me.initEventsObj();
-					this.execReadyList();
-					this.initComplete = true;
-				});
-			}
+			});
+		}
 		
 	}
 	
@@ -5498,7 +5509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for(var line in opts.lines) {
 	            var cur = opts.lines[line];
 	            high = high ? Math.max(cur.value,high) : cur.value;
-	            low = low ? Math.min(cur.value,low) : cur.low;
+	            low = low ? Math.min(cur.value,low) : cur.value;
 	        }
 	        for(var i=0,len = datas.length;i<len;i++) {
 	            var val = datas[i];
@@ -5520,16 +5531,27 @@ return /******/ (function(modules) { // webpackBootstrap
 		,drawMainAreaLines: function(isDrawMarketPrice){
 			var isDraw = isDrawMarketPrice;
 			var mainAreaOpts = this.chartOpts.mainArea;
-			if(isDraw!==false){
-				
+			if(isDraw!==false){			
 				if(mainAreaOpts.marketPriceLine&&mainAreaOpts.marketPriceLine.show) {
 					this.drawMainAreaLine('marketPrice',{'label':'市价'})
 				}
 			}
 			var lines = mainAreaOpts.lines||{};
+			var isExceed = false;
 			for(var line in lines) {
-				var opts = lines[line];
-				this.drawMainAreaLine(line,opts);
+				var value = lines[line].value;
+				if(value > mainAreaOpts.high || value < mainAreaOpts.low) {
+					isExceed = true;
+					break;
+				}
+			}
+			if(!isExceed) {
+				for(var l in lines) {
+					var opts = lines[l];
+					this.drawMainAreaLine(l,opts);
+				}
+			}else{
+				this.painter();
 			}
 		}
 		,drawMainAreaLine: function(key,lineOpts){
@@ -5544,7 +5566,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 				opts.lineColor = opts.bgColor = color;
 			}
-			
+	
 			if(!opts.value) {
 				return false;
 			}
@@ -5842,7 +5864,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = parseFloat(value);
 	        if(value >= low && value <=high) {
 	            ret = core.getRelativeYByShowDataValue(value, high, low, opts.height);
-	            if(ret<=opts.height) {
+	            var maxHeight = opts.height+0.5;
+	            if(ret<= maxHeight) {
 					if(isTotal) {
 		                ret +=opts.y+opts.top;
 		            }
@@ -6252,7 +6275,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return result;
 	    },
 	    getRelativeYByShowDataValue: function(value, high, low, height){
-	        var result = Math.ceil((high - value)*height/(high - low));
+	        var result;
+	        if(value==low){
+	            result = height;
+	        }else if(value==high) {
+	            result = 0;
+	        }else {
+	            result = Math.ceil((high - value)*height/(high - low));
+	        }
 	        if (result * 10 % 10 == 0) result += .5;
 	        return result;
 	    }
@@ -7173,6 +7203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		init: function(){
 			var me = this;
 			$(me.canvas).on('mousedown.drag',function(e){
+				if(window.mouseMoveLocked) return ;
 				if(!e.button) {
 					me.start(e);
 				}else {
@@ -7181,8 +7212,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			}).on('mousemove.drag',function(e){
 				me.move(e);
 			}).on('mouseup.drag', function(e){
+				if(window.mouseMoveLocked) return ;
 				me.end.call(me,e);
 			}).on('mouseleave',function(e){
+				if(window.mouseMoveLocked) return ;
 				me.end.call(me,e);
 			})
 		},
@@ -7203,7 +7236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if(this.canvas.clear) {
 				this.ctx.clearRect(0, 0 ,this.canvas.width, this.canvas.height);
 			}
-			//e.stopPropagation();
+			e.stopPropagation();
 		},
 	
 		move: function(e){
@@ -7354,7 +7387,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				}).on('mouseleave',function(e){
 					me.mouseout.call(me,e,true,true);
 				}).on('mouseenter',function(e){
-					if(window.mouseMoveLocked) return false;
+					if(window.mouseMoveLocked) return ;
 					me.mouseenter.call(me,e);
 				})
 		

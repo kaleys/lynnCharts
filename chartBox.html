@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>单个图表示例</title>
+	<link rel="stylesheet" type="text/css" href="./css/lynnchart.css">
+	<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1448966754_604278.css">
+	<style>
+		#chart {
+			position: relative;
+			width: 80%;
+			height: 600px;
+			margin: 0 auto;
+			border: 1px solid #21242b;
+		}
+		.btn {
+			color: #999;
+			background: #404247;
+		}
+		.btn:hover {
+			background: #282B32;
+		}
+		.btn.active {
+			background: #3e4450
+		}
+		
+		.control-area {
+			width: 80%;
+			margin: 0 auto;
+		}
+
+		.item {
+			margin: 10px 0;
+		}
+
+	</style>
+</head>
+<body>
+	
+
+	<div class="chart-wrap" id="chart" ></div>
+	<div class="control-area">
+		<div id="add-type" class="item">
+			<h3>切换主区域图表类型</h3>
+			<button class="btn active" data-type="candlestick">实心蜡烛图</button>
+			<button class="btn" data-type="hollowcandle">空心蜡烛图</button>
+			<button class="btn" data-type="polyline">折线图</button>
+		</div>
+
+		<div class="item">
+			<h3>同步数据</h3>
+
+		</div>
+	</div>
+	<script src="js/require.js" data-main="chartBox.js"></script>
+</body>
+</html>

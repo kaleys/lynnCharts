@@ -145,7 +145,7 @@ require(['jquery','dist/lynnCharts'],function($,lynnCharts){
 
 	$(window).on('resize',function(){
 		var height = $(window).height()*0.8;
-		lynnchart.resize({height:height});
+		charts.resize({height:height});
 	})
 })
 
