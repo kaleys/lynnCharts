@@ -104,13 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							},
 							listCls:'chart-period',
 							items: [
-								{label: '1 Minute', value:1, active:true},
-								{label: '5 Minute', value:5},
-								{label: '15 Minute', value:15},
-								{label: '1 Hour', value:60},
-								{label: '1 Day', value:100},
-								{label: '1 Week', value:200},
-								{label: '1 Month', value:300}
+								{label: '1 Minute', value:1, active:true}
 							],
 							formatItemTpl: function(item) {
 								var cls = item.active ? 'active':''
