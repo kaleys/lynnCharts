@@ -229,7 +229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 								chart.changeLayout(data.value);
 							}
 						},
-						//lock:false,
+						lock:false,
 					},
 					layout: {
 					},
